@@ -74,7 +74,6 @@ router.get("/:zapId", middleware_1.authMiddleware, (req, res) => __awaiter(void 
             }
         }
     });
-    console.log(zap);
     res.json({ zap });
 }));
 router.get("/", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -97,7 +96,6 @@ router.get("/", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, voi
             }
         }
     });
-    console.log("inside all zaps");
     res.json({ zaps });
 }));
 exports.zapRouter = router;
