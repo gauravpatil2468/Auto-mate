@@ -51,12 +51,14 @@ sortingOrder Int @default(0)
 model AvailableAction{
  id String @id @default(uuid())
  name String
+ image String?
  actions Action[]
 }
 
 model AvailableTrigger{
   id String @id @default(uuid())
   name String
+  image String?
   triggers Trigger[]
 
 }
