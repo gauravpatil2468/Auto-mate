@@ -102,7 +102,7 @@ function ZapList({ zaps }: { zaps: Zap[] }) {
 
     return (
         <div className="mt-4">
-            {/* Header Row */}
+
             <div className="flex bg-gray-200 font-semibold text-center py-3 rounded-t-lg">
                 <div className="w-1/5 text-left px-4">Trigger & Actions</div>
                 <div className="w-1/5 text-left px-4">Zap ID</div>
@@ -111,13 +111,13 @@ function ZapList({ zaps }: { zaps: Zap[] }) {
                 <div className="w-1/5 text-center px-4">Go</div>
             </div>
             
-            {/* Data Rows */}
+       
             {zaps.map((z) => {
                 const webhookUrl = `${HOOKS_URL}/hooks/catch/${z.userId}/${z.id}`;
 
                 return (
                     <div key={z.id} className="flex border-b border-gray-300 py-3 items-center">
-                        {/* Trigger & Actions */}
+             
                         <div className="w-1/5 px-4 flex items-center gap-2">
                             {z.trigger.type.image ? (
                                 <img src={z.trigger.type.image} alt={z.trigger.type.name} className="w-6 h-6 rounded-full" />
@@ -133,10 +133,10 @@ function ZapList({ zaps }: { zaps: Zap[] }) {
                             ))}
                         </div>
 
-                        {/* Zap ID */}
+                   
                         <div className="w-1/5 px-4 truncate">{z.id}</div>
 
-                        {/* Webhook URL with Copy Button */}
+                  
                         <div className="w-1/5 px-4 flex items-center gap-2">
                             <input 
                                 type="text"
@@ -147,10 +147,10 @@ function ZapList({ zaps }: { zaps: Zap[] }) {
                             <LinkButton onClick={() => copyToClipboard(webhookUrl)}>Copy</LinkButton>
                         </div>
 
-                        {/* Last Edited (Placeholder Date) */}
+                 
                         <div className="w-1/5 px-4">2024-03-02</div>
 
-                        {/* Go Button */}
+                  
                         <div className="w-1/5 flex justify-center">
                             <LinkButton onClick={() => router.push("/zap/" + z.id)}>Go</LinkButton>
                         </div>

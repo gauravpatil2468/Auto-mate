@@ -19,6 +19,8 @@ import ReactFlow, {
   NodeMouseHandler,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { Input } from "@/components/Input";
+
 
 interface CustomNodeData {
   index: number;
@@ -111,11 +113,11 @@ function FlowCanvas() {
     setSelectedNode(node);
   };
 
-  const handleSelect = (item: ActionOrTrigger) => {
+  const handleSelect = (item: ActionOrTrigger,metadata: any) => {
     setNodes((prevNodes) =>
       prevNodes.map((node) =>
         node.id === selectedNode?.id
-          ? { ...node, data: { ...node.data, name: item.name, id: item.id, image: item.image } }
+          ? { ...node, data: { ...node.data, name: item.name, id: item.id, image: item.image, metadata: metadata } }
           : node
       )
     );
@@ -205,7 +207,6 @@ function FlowCanvas() {
     </div>
   );
 }
-
 function Modal({
   node,
   items,
@@ -214,31 +215,111 @@ function Modal({
 }: {
   node: Node<CustomNodeData>;
   items: ActionOrTrigger[];
-  onSelect: (item: ActionOrTrigger) => void;
+  onSelect: (item: ActionOrTrigger, metadata: any) => void;
   onClose: () => void;
 }) {
+  const [step, setStep] = useState(0);
+  const [selectedAction, setSelectedAction] = useState<ActionOrTrigger | null>(null);
+  const [metadata, setMetadata] = useState({});
+  const isTrigger = node.data.type === "Trigger";
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-4 rounded-lg shadow-lg w-96">
-        <h2 className="text-lg font-semibold mb-2">
-          Select {node.data.type === "Trigger" ? "Trigger" : "Action"}
-        </h2>
-        <div className="space-y-2">
-          {items.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => onSelect(item)}
-              className="flex items-center w-full p-2 border rounded-lg hover:bg-gray-100"
-            >
-              <img src={item.image} alt={item.name} className="w-10 h-10 mr-2" />
-              {item.name}
-            </button>
-          ))}
-        </div>
-        <button onClick={onClose} className="mt-4 w-full text-center text-blue-500">
+        {step === 0 && (
+          <>
+            <h2 className="text-lg font-semibold mb-2">
+              Select {isTrigger ? "Trigger" : "Action"}
+            </h2>
+            <div className="space-y-2">
+              {items.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    if (isTrigger) {
+                      onSelect(item, {});
+                      onClose();
+                    } else {
+                      setSelectedAction(item);
+                      setStep(1);
+                    }
+                  }}
+                  className="flex items-center w-full p-2 border rounded-lg hover:bg-gray-100"
+                >
+                  <img src={item.image} alt={item.name} className="w-10 h-10 mr-2" />
+                  {item.name}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
+        {step === 1 && selectedAction && (
+          <div className="border border-slate-400 rounded m-2 p-3">
+            <h2 className="text-lg font-semibold mb-2">Configure {selectedAction.name}</h2>
+            {selectedAction.name === "email" && (
+              <EmailSelector setMetadata={setMetadata} />
+            )}
+            {selectedAction.name === "solana_send" && (
+              <SolanaSelector setMetadata={setMetadata} />
+            )}
+
+            <div className="mt-4 flex justify-center gap-5">
+              <button
+                onClick={() => setStep(0)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                Back
+              </button>
+              <button
+                onClick={() => {
+                  onSelect(selectedAction, metadata);
+                  onClose();
+                }}
+                className="text-blue-500 hover:text-blue-700"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        )}
+
+        <button onClick={onClose} className="mt-4 w-full text-center text-red-500">
           Cancel
         </button>
       </div>
+    </div>
+  );
+}
+
+function EmailSelector({ setMetadata }: { setMetadata: (metadata: any) => void }) {
+  const [to, setTo] = useState("");
+  const [body, setBody] = useState("");
+
+  useEffect(() => {
+    setMetadata({ to, body });
+  }, [to, body, setMetadata]);
+
+  return (
+    <div>
+      <Input label="To" type="text" placeholder="To" onChange={(e) => setTo(e.target.value)} />
+      <Input label="Body" type="text" placeholder="Body" onChange={(e) => setBody(e.target.value)} />
+    </div>
+  );
+}
+
+function SolanaSelector({ setMetadata }: { setMetadata: (metadata: any) => void }) {
+  const [to, setTo] = useState("");
+  const [amount, setAmount] = useState("");
+
+  useEffect(() => {
+    setMetadata({ to, amount });
+  }, [to, amount, setMetadata]);
+
+  return (
+    <div>
+      <Input label="To" type="text" placeholder="To" onChange={(e) => setTo(e.target.value)} />
+      <Input label="Amount" type="text" placeholder="Amount" onChange={(e) => setAmount(e.target.value)} />
     </div>
   );
 }

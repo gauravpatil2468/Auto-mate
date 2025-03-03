@@ -34,6 +34,7 @@ router.post("/", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, vo
                     create: ((_a = parsedData.data.actions) === null || _a === void 0 ? void 0 : _a.map((x, index) => ({
                         actionId: x.availableActionId,
                         sortingOrder: index,
+                        metadata: x.actionMetadata
                     }))) || [] // Fallback to empty array if actions are undefined
                 }
             }
@@ -42,6 +43,7 @@ router.post("/", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, vo
             data: {
                 zapId: zap.id,
                 triggerId: parsedData.data.availableTriggerId,
+                metadata: parsedData.data.triggerMetadata
             }
         });
         yield tx.zap.update({
