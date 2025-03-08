@@ -13,10 +13,10 @@ const client_1 = require("@prisma/client");
 const client = new client_1.PrismaClient();
 const kafkajs_1 = require("kafkajs");
 const kafka = new kafkajs_1.Kafka({
-    clientId: 'outbox-processor',
-    brokers: ['localhost:9092']
+    clientId: "outbox-processor",
+    brokers: ["localhost:9092"]
 });
-const TOPIC_NAME = 'zap-events';
+const TOPIC_NAME = "zap-events";
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const producer = kafka.producer();
@@ -26,12 +26,17 @@ function main() {
                 where: {},
                 take: 10
             });
-            producer.send({
+            if (pendingRuns.length !== 0) {
+                console.log(`Processing ${pendingRuns.length} runs`, pendingRuns);
+            }
+            // ✅ Ensure messages are valid JSON
+            yield producer.send({
                 topic: TOPIC_NAME,
                 messages: pendingRuns.map(r => ({
-                    value: r.zapRunId
+                    value: JSON.stringify({ zapRunId: r.zapRunId, stage: 0 }) // ✅ Always send valid JSON
                 }))
             });
+            // Delete processed records
             yield client.zapRunOutbox.deleteMany({
                 where: {
                     id: {

@@ -260,7 +260,7 @@ function Modal({
             {selectedAction.name === "email" && (
               <EmailSelector setMetadata={setMetadata} />
             )}
-            {selectedAction.name === "solana_send" && (
+            {selectedAction.name === "send solana" && (
               <SolanaSelector setMetadata={setMetadata} />
             )}
 
